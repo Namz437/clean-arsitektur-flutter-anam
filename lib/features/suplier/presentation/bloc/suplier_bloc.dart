@@ -22,13 +22,16 @@ class SuplierBloc extends Bloc<SuplierEvent, SuplierState> {
       : super(SuplierInitial()) {
     on<SuplierEventAdd>((event, emit) async {
       emit(SuplierStateLoading());
-      final data = await suplierUsecasesAdd.execute(suplier: event.suplierModel);
+      final data =
+          await suplierUsecasesAdd.execute(suplier: event.suplierModel);
       data.fold(
         (l) {
           emit(SuplierStateError(message: l.toString()));
         },
         (r) {
           emit(SuplierStateSuccess());
+
+          add(SuplierEventGetAll());
         },
       );
     });
@@ -42,6 +45,8 @@ class SuplierBloc extends Bloc<SuplierEvent, SuplierState> {
         },
         (r) {
           emit(SuplierStateSuccess());
+
+          add(SuplierEventGetAll());
         },
       );
     });
@@ -54,6 +59,8 @@ class SuplierBloc extends Bloc<SuplierEvent, SuplierState> {
         },
         (r) {
           emit(SuplierStateSuccess());
+
+          add(SuplierEventGetAll());
         },
       );
     });

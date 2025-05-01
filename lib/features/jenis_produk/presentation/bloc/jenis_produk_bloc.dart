@@ -10,7 +10,8 @@ part 'jenis_produk_state.dart';
 class JenisProdukBloc extends Bloc<JenisProdukEvent, JenisProdukState> {
   final JenisProdukUsecasesAddJenisProduk jenisprodukUsecasesAdd;
   final JenisProdukUsecasesEditJenisProduk jenisprodukUsecasesEditJenisProduk;
-  final JenisProdukUsecasesDeleteJenisProduk jenisprodukUsecasesDeleteJenisProduk;
+  final JenisProdukUsecasesDeleteJenisProduk
+      jenisprodukUsecasesDeleteJenisProduk;
   final JenisProdukUsecasesGetAll jenisprodukUsecasesGetAll;
   final JenisProdukUsecasesGetById jenisprodukUsecasesGetById;
   JenisProdukBloc(
@@ -22,38 +23,46 @@ class JenisProdukBloc extends Bloc<JenisProdukEvent, JenisProdukState> {
       : super(JenisProdukInitial()) {
     on<JenisProdukEventAdd>((event, emit) async {
       emit(JenisProdukStateLoading());
-      final data = await jenisprodukUsecasesAdd.execute(jenisProduk: event.jenisprodukModel);
+      final data = await jenisprodukUsecasesAdd.execute(
+          jenisProduk: event.jenisprodukModel);
       data.fold(
         (l) {
           emit(JenisProdukStateError(message: l.toString()));
         },
         (r) {
           emit(JenisProdukStateSuccess());
+
+          add(JenisProdukEventGetAll());
         },
       );
     });
     on<JenisProdukEventEdit>((event, emit) async {
       emit(JenisProdukStateLoading());
-      final data =
-          await jenisprodukUsecasesEditJenisProduk.execute(jenisProduk: event.jenisprodukModel);
+      final data = await jenisprodukUsecasesEditJenisProduk.execute(
+          jenisProduk: event.jenisprodukModel);
       data.fold(
         (l) {
           emit(JenisProdukStateError(message: l.toString()));
         },
         (r) {
           emit(JenisProdukStateSuccess());
+
+          add(JenisProdukEventGetAll());
         },
       );
     });
     on<JenisProdukEventDelete>((event, emit) async {
       emit(JenisProdukStateLoading());
-      final data = await jenisprodukUsecasesDeleteJenisProduk.execute(id: event.id);
+      final data =
+          await jenisprodukUsecasesDeleteJenisProduk.execute(id: event.id);
       data.fold(
         (l) {
           emit(JenisProdukStateError(message: l.toString()));
         },
         (r) {
           emit(JenisProdukStateSuccess());
+
+          add(JenisProdukEventGetAll());
         },
       );
     });
@@ -83,4 +92,3 @@ class JenisProdukBloc extends Bloc<JenisProdukEvent, JenisProdukState> {
     });
   }
 }
-

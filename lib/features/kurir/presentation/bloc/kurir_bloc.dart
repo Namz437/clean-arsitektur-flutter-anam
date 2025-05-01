@@ -29,6 +29,8 @@ class KurirBloc extends Bloc<KurirEvent, KurirState> {
         },
         (r) {
           emit(KurirStateSuccess());
+
+          add(KurirEventGetAll());
         },
       );
     });
@@ -42,6 +44,8 @@ class KurirBloc extends Bloc<KurirEvent, KurirState> {
         },
         (r) {
           emit(KurirStateSuccess());
+
+          add(KurirEventGetAll());
         },
       );
     });
@@ -54,6 +58,8 @@ class KurirBloc extends Bloc<KurirEvent, KurirState> {
         },
         (r) {
           emit(KurirStateSuccess());
+
+          add(KurirEventGetAll());
         },
       );
     });

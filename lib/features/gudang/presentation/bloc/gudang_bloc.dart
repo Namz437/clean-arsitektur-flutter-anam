@@ -29,6 +29,8 @@ class GudangBloc extends Bloc<GudangEvent, GudangState> {
         },
         (r) {
           emit(GudangStateSuccess());
+
+          add(GudangEventGetAll());
         },
       );
     });
@@ -42,6 +44,8 @@ class GudangBloc extends Bloc<GudangEvent, GudangState> {
         },
         (r) {
           emit(GudangStateSuccess());
+
+          add(GudangEventGetAll());
         },
       );
     });
@@ -54,6 +58,8 @@ class GudangBloc extends Bloc<GudangEvent, GudangState> {
         },
         (r) {
           emit(GudangStateSuccess());
+
+          add(GudangEventGetAll());
         },
       );
     });

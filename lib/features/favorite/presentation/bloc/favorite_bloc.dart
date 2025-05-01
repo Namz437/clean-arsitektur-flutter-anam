@@ -30,6 +30,8 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
         },
         (r) {
           emit(FavoriteStateSuccess());
+
+          add(FavoriteEventGetAll());
         },
       );
     });
@@ -43,6 +45,8 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
         },
         (r) {
           emit(FavoriteStateSuccess());
+
+          add(FavoriteEventGetAll());
         },
       );
     });
@@ -55,6 +59,8 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
         },
         (r) {
           emit(FavoriteStateSuccess());
+
+          add(FavoriteEventGetAll());
         },
       );
     });

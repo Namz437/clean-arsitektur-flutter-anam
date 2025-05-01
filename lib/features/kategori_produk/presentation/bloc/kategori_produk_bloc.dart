@@ -29,6 +29,8 @@ class KategoriProdukBloc extends Bloc<KategoriProdukEvent, KategoriProdukState> 
         },
         (r) {
           emit(KategoriProdukStateSuccess());
+
+          add(KategoriProdukEventGetAll());
         },
       );
     });
@@ -42,6 +44,8 @@ class KategoriProdukBloc extends Bloc<KategoriProdukEvent, KategoriProdukState> 
         },
         (r) {
           emit(KategoriProdukStateSuccess());
+
+          add(KategoriProdukEventGetAll());
         },
       );
     });
@@ -54,6 +58,8 @@ class KategoriProdukBloc extends Bloc<KategoriProdukEvent, KategoriProdukState> 
         },
         (r) {
           emit(KategoriProdukStateSuccess());
+
+          add(KategoriProdukEventGetAll());
         },
       );
     });

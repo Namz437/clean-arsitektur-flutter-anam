@@ -30,6 +30,8 @@ class KeranjangBloc extends Bloc<KeranjangEvent, KeranjangState> {
         },
         (r) {
           emit(KeranjangStateSuccess());
+
+          add(KeranjangEventGetAll());
         },
       );
     });
@@ -43,6 +45,8 @@ class KeranjangBloc extends Bloc<KeranjangEvent, KeranjangState> {
         },
         (r) {
           emit(KeranjangStateSuccess());
+
+          add(KeranjangEventGetAll());
         },
       );
     });
@@ -55,6 +59,8 @@ class KeranjangBloc extends Bloc<KeranjangEvent, KeranjangState> {
         },
         (r) {
           emit(KeranjangStateSuccess());
+
+          add(KeranjangEventGetAll());
         },
       );
     });

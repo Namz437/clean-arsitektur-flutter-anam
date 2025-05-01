@@ -3,6 +3,7 @@ import 'package:cek/features/favorite/data/datasources/favorite_datasource.dart'
 import 'package:cek/features/favorite/data/models/favorite_model.dart';
 import 'package:cek/features/gudang/data/datasources/gudang_datasource.dart';
 import 'package:cek/features/keranjang/data/models/keranjang_model.dart';
+import 'package:cek/features/produk/data/models/produk_model.dart';
 import 'package:cek/features/produk/domain/entities/produk.dart';
 import 'package:cek/features/produk/presentation/bloc/produk_bloc.dart';
 import 'package:cek/features/jenis_produk/data/datasources/jenis_produk_datasource.dart';
@@ -10,7 +11,7 @@ import 'package:cek/features/jenis_produk/domain/entities/jenis_produk.dart';
 import 'package:cek/features/kategori_produk/data/datasources/kategori_produk_datasource.dart';
 import 'package:cek/features/kategori_produk/domain/entities/kategori_produk.dart';
 import 'package:cek/features/gudang/domain/entities/gudang.dart';
-import 'package:cek/features/keranjang/data/datasources/keranjang_datasource.dart'; 
+import 'package:cek/features/keranjang/data/datasources/keranjang_datasource.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -40,7 +41,7 @@ class ProdukPages extends StatelessWidget {
       firebaseFirestore: FirebaseFirestore.instance,
     );
 
-    final FavoriteDataSource = FavoriteRemoteDataSourceImplementation(
+    final favoriteDataSource = FavoriteRemoteDataSourceImplementation(
       firebaseFirestore: FirebaseFirestore.instance,
     );
 
@@ -56,7 +57,7 @@ class ProdukPages extends StatelessWidget {
           ),
         ],
       ),
-      drawer: const CustomDrawer(), //sidebar
+      drawer: const CustomDrawer(),
       body: BlocListener<ProdukBloc, ProdukState>(
         listener: (context, state) {
           if (state is ProdukStateError) {
@@ -180,10 +181,8 @@ class ProdukPages extends StatelessWidget {
                               onPressed: () async {
                                 // Fitur tambah produk ke daftar favorit
                                 final favoriteItem = FavoriteModel(
-                                  id: produk
-                                      .id, 
-                                  produkId: produk
-                                      .id,
+                                  id: produk.id,
+                                  produkId: produk.id,
                                   createdAt: DateTime.now(),
                                   updatedAt: DateTime.now(),
                                   isNew: true,
@@ -191,7 +190,7 @@ class ProdukPages extends StatelessWidget {
 
                                 try {
                                   // Pake favoriteDataSource buat nambahin item ke favorit
-                                  await FavoriteDataSource.addFavorite(
+                                  await favoriteDataSource.addFavorite(
                                       favorite: favoriteItem);
 
                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -286,8 +285,6 @@ class ProdukPages extends StatelessWidget {
                 controller: deskripsiController,
                 decoration: InputDecoration(labelText: 'Deskripsi Produk'),
               ),
-
-              // Dropdown untuk Jenis Produk
               FutureBuilder<List<JenisProduk>>(
                 future: jenisProdukList,
                 builder: (context, snapshot) {
@@ -295,27 +292,26 @@ class ProdukPages extends StatelessWidget {
                     return CircularProgressIndicator();
                   }
 
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Text("Jenis Produk Tidak Tersedia");
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
                   }
 
+                  final jenisProdukItems = snapshot.data ?? [];
                   return DropdownButtonFormField<String>(
-                    value: isEdit ? produk?.jenisProdukUid : null,
-                    onChanged: (value) {
-                      jenisProdukUidController.text = value ?? '';
-                    },
-                    items: snapshot.data!.map((jenisProduk) {
-                      return DropdownMenuItem<String>(
-                        value: jenisProduk.id,
-                        child: Text(jenisProduk.namaJenis),
-                      );
-                    }).toList(),
                     decoration: InputDecoration(labelText: 'Jenis Produk'),
+                    value: isEdit ? produk?.jenisProdukUid : null,
+                    items: jenisProdukItems
+                        .map((jenisProduk) => DropdownMenuItem<String>(
+                              value: jenisProduk.id,
+                              child: Text(jenisProduk.namaJenis),
+                            ))
+                        .toList(),
+                    onChanged: (value) {
+                      jenisProdukUidController.text = value!;
+                    },
                   );
                 },
               ),
-
-              // Dropdown untuk Kategori Produk
               FutureBuilder<List<KategoriProduk>>(
                 future: kategoriProdukList,
                 builder: (context, snapshot) {
@@ -323,27 +319,26 @@ class ProdukPages extends StatelessWidget {
                     return CircularProgressIndicator();
                   }
 
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Text("Kategori Produk Tidak Tersedia");
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
                   }
 
+                  final kategoriProdukItems = snapshot.data ?? [];
                   return DropdownButtonFormField<String>(
-                    value: isEdit ? produk?.kategoriProdukUid : null,
-                    onChanged: (value) {
-                      kategoriProdukUidController.text = value ?? '';
-                    },
-                    items: snapshot.data!.map((kategoriProduk) {
-                      return DropdownMenuItem<String>(
-                        value: kategoriProduk.id,
-                        child: Text(kategoriProduk.namaKategori),
-                      );
-                    }).toList(),
                     decoration: InputDecoration(labelText: 'Kategori Produk'),
+                    value: isEdit ? produk?.kategoriProdukUid : null,
+                    items: kategoriProdukItems
+                        .map((kategoriProduk) => DropdownMenuItem<String>(
+                              value: kategoriProduk.id,
+                              child: Text(kategoriProduk.namaKategori),
+                            ))
+                        .toList(),
+                    onChanged: (value) {
+                      kategoriProdukUidController.text = value!;
+                    },
                   );
                 },
               ),
-
-              // Dropdown untuk Gudang
               FutureBuilder<List<Gudang>>(
                 future: gudangList,
                 builder: (context, snapshot) {
@@ -351,36 +346,61 @@ class ProdukPages extends StatelessWidget {
                     return CircularProgressIndicator();
                   }
 
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Text("Gudang Tidak Tersedia");
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
                   }
 
+                  final gudangItems = snapshot.data ?? [];
                   return DropdownButtonFormField<String>(
-                    value: isEdit ? produk?.gudangUid : null,
-                    onChanged: (value) {
-                      gudangUidController.text = value ?? '';
-                    },
-                    items: snapshot.data!.map((gudang) {
-                      return DropdownMenuItem<String>(
-                        value: gudang.id,
-                        child: Text(gudang.namaGudang),
-                      );
-                    }).toList(),
                     decoration: InputDecoration(labelText: 'Gudang'),
+                    value: isEdit ? produk?.gudangUid : null,
+                    items: gudangItems
+                        .map((gudang) => DropdownMenuItem<String>(
+                              value: gudang.id,
+                              child: Text(gudang.namaGudang),
+                            ))
+                        .toList(),
+                    onChanged: (value) {
+                      gudangUidController.text = value!;
+                    },
                   );
                 },
               ),
-
-              SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
+                  final produkBaru = Produk(
+                    id: isEdit
+                        ? produk?.id ?? ''
+                        : '', // Menggunakan produk?.id jika isEdit, jika tidak, biarkan kosong
+                    namaProduk: namaController.text,
+                    harga: hargaController.text,
+                    deskripsi: deskripsiController.text,
+                    jenisProdukUid: jenisProdukUidController.text,
+                    kategoriProdukUid: kategoriProdukUidController.text,
+                    gudangUid: gudangUidController.text,
+                  );
+
                   if (isEdit) {
+                    // Edit Produk
+                    context.read<ProdukBloc>().add(
+                          ProdukEventEdit(
+                              produkModel: ProdukModel.fromProduk(
+                                  produkBaru)), // Mengonversi ke ProdukModel
+                        );
                   } else {
+                    // Tambah Produk
+                    context.read<ProdukBloc>().add(
+                          ProdukEventAdd(
+                              produkModel: ProdukModel.fromProduk(
+                                  produkBaru)), // Mengonversi ke ProdukModel
+                        );
                   }
+
+                  // Tutup halaman setelah aksi
                   Navigator.pop(context);
                 },
                 child: Text(isEdit ? 'Update Produk' : 'Tambah Produk'),
-              ),
+              )
             ],
           ),
         );

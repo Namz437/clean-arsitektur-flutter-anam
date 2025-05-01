@@ -13,6 +13,7 @@ class ProdukBloc extends Bloc<ProdukEvent, ProdukState> {
   final ProdukUsecasesDeleteProduk produkUsecasesDeleteProduk;
   final ProdukUsecasesGetAll produkUsecasesGetAll;
   final ProdukUsecasesGetById produkUsecasesGetById;
+
   ProdukBloc(
       {required this.produkUsecasesAdd,
       required this.produkUsecasesEditProduk,
@@ -29,22 +30,27 @@ class ProdukBloc extends Bloc<ProdukEvent, ProdukState> {
         },
         (r) {
           emit(ProdukStateSuccess());
+          // Memanggil event untuk mendapatkan data terbaru setelah berhasil menambah produk
+          add(ProdukEventGetAll());
         },
       );
     });
+
     on<ProdukEventEdit>((event, emit) async {
       emit(ProdukStateLoading());
-      final data =
-          await produkUsecasesEditProduk.execute(produk: event.produkModel);
+      final data = await produkUsecasesEditProduk.execute(produk: event.produkModel);
       data.fold(
         (l) {
           emit(ProdukStateError(message: l.toString()));
         },
         (r) {
           emit(ProdukStateSuccess());
+          // Memanggil event untuk mendapatkan data terbaru setelah berhasil mengedit produk
+          add(ProdukEventGetAll());
         },
       );
     });
+
     on<ProdukEventDelete>((event, emit) async {
       emit(ProdukStateLoading());
       final data = await produkUsecasesDeleteProduk.execute(id: event.id);
@@ -54,9 +60,12 @@ class ProdukBloc extends Bloc<ProdukEvent, ProdukState> {
         },
         (r) {
           emit(ProdukStateSuccess());
+          // Memanggil event untuk mendapatkan data terbaru setelah berhasil menghapus produk
+          add(ProdukEventGetAll());
         },
       );
     });
+
     on<ProdukEventGetAll>((event, emit) async {
       emit(ProdukStateLoading());
       final data = await produkUsecasesGetAll.execute();
@@ -69,6 +78,7 @@ class ProdukBloc extends Bloc<ProdukEvent, ProdukState> {
         },
       );
     });
+
     on<ProdukEventGetById>((event, emit) async {
       emit(ProdukStateLoading());
       final data = await produkUsecasesGetById.execute(id: event.id);
